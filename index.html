@@ -22,7 +22,21 @@
     <p class="sub">おなじ のりものを くっつけて<br>おおきく しよう！</p>
     <p class="best">ハイスコア <span id="title-hi">0</span></p>
     <button id="start" class="big-btn" type="button">はじめる</button>
-    <button id="title-mute" class="small-btn" type="button">おと：オン</button>
+    <div class="audio-row">
+      <button id="title-mute" class="small-btn" type="button">おと：オン</button>
+      <button id="title-bgm" class="small-btn" type="button">おんがく：オン</button>
+    </div>
+    <label class="vol-row">おんりょう <input id="title-vol" class="vol" type="range" min="0" max="100" step="1" aria-label="おんがくの おんりょう"><span id="title-vol-n" class="vol-n">0</span></label>
+  </section>
+
+  <section id="settings" class="overlay" hidden>
+    <div class="panel">
+      <h2>せってい</h2>
+      <button id="set-mute" class="small-btn wide" type="button">おと：オン</button>
+      <button id="set-bgm" class="small-btn wide" type="button">おんがく：オン</button>
+      <label class="vol-row">おんりょう <input id="set-vol" class="vol" type="range" min="0" max="100" step="1" aria-label="おんがくの おんりょう"><span id="set-vol-n" class="vol-n">0</span></label>
+      <button id="set-close" class="big-btn" type="button">つづける</button>
+    </div>
   </section>
 
   <section id="over" class="overlay" hidden>
@@ -41,6 +55,7 @@
 <script src="src/physics.js"></script>
 <script src="src/render.js"></script>
 <script src="src/audio.js"></script>
+<script src="src/bgm.js"></script>
 <script src="src/main.js"></script>
 </body>
 </html>

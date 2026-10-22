@@ -53,4 +53,36 @@ html, body {
   font: inherit; font-size: 16px; font-weight: bold; color: #4a2f1c; background: #fff8e6;
   border: 3px solid #4a2f1c; border-radius: 999px; padding: 8px 22px; cursor: pointer;
 }
+.audio-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.small-btn { min-height: 44px; }
+.small-btn.off { background: #d8d0c0; color: #7a6f60; }
+.small-btn.wide { width: 100%; }
+.vol-row { white-space: nowrap; display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: bold; }
+.vol-n { min-width: 3.2em; text-align: left; font-variant-numeric: tabular-nums; }
+.vol { -webkit-appearance: none; appearance: none; width: 170px; height: 44px; background: transparent; margin: 0; cursor: pointer; touch-action: pan-x; }
+.vol::-webkit-slider-runnable-track { height: 14px; border: 3px solid #4a2f1c; border-radius: 999px; background: #fff8e6; }
+.vol::-moz-range-track { height: 8px; border: 3px solid #4a2f1c; border-radius: 999px; background: #fff8e6; }
+.vol::-webkit-slider-thumb { -webkit-appearance: none; width: 34px; height: 34px; margin-top: -13px; border-radius: 50%; background: #e53935; border: 3px solid #4a2f1c; }
+.vol::-moz-range-thumb { width: 28px; height: 28px; border-radius: 50%; background: #e53935; border: 3px solid #4a2f1c; }
+#settings { z-index: 20; }
+.panel {
+  width: min(320px, 100%); display: flex; flex-direction: column; align-items: center; gap: 14px;
+  background: #fff8e6; border: 4px solid #4a2f1c; border-radius: 20px; padding: 18px 16px;
+}
+.panel h2 { font-size: 28px; }
+.panel .vol { width: 130px; }
 @media (max-height: 560px) { .overlay h1 { font-size: 32px; } .overlay { gap: 8px; } }
+@media (max-height: 420px) {
+  .overlay { gap: 5px; padding: 8px; }
+  .overlay h1 { font-size: 26px; }
+  .overlay h1 br { display: none; }
+  .overlay h2 { font-size: 24px; }
+  .sub { font-size: 13px; line-height: 1.4; }
+  .best { font-size: 16px; }
+  .big-btn { font-size: 21px; padding: 6px 30px; box-shadow: 0 4px 0 #4a2f1c; }
+  .small-btn { min-height: 38px; padding: 5px 16px; font-size: 14px; }
+  .vol { height: 36px; }
+  .vol-row { font-size: 14px; }
+  .panel { padding: 8px 14px; gap: 6px; }
+  .panel h2 { font-size: 22px; }
+}

@@ -261,5 +261,9 @@ var HDAudio = (function () {
     osc.start(t0); osc.stop(t0 + 0.12);
   }
 
-  return { unlock: unlock, setMuted: setMuted, isMuted: isMuted, playMerge: playMerge, playVanish: playVanish, playDrop: playDrop };
+  // BGM 用: 共有の AudioContext と、合体音と同じコンプレッサ付きの出力
+  function context(create) { return create === false ? ctx : ensure(); }
+  function output() { var c = ensure(); return c ? getBus(c) : null; }
+
+  return { context: context, output: output, unlock: unlock, setMuted: setMuted, isMuted: isMuted, playMerge: playMerge, playVanish: playVanish, playDrop: playDrop };
 })();

@@ -17,6 +17,7 @@
   var overTimer = 0;
   var effects = [];
   var clock = 0;
+  var settingsOpen = false;     // 設定パネルを開いている間はゲームを止める
   var inputLockUntil = 0;       // この時刻まで落下操作を受けない（ダブルタップ対策）
 
   // ---- 保存 ----
@@ -43,10 +44,18 @@
     if (mode === 'play') HDRender.drawPreview(nextCanvas, nextStage);
   }
   function updateMuteUi() {
-    var m = HDAudio.isMuted();
+    var m = HDAudio.isMuted(), b = HDBgm.isEnabled(), pct = Math.round(HDBgm.getVolume() * 100);
     $('mute').classList.toggle('off', m);
-    $('mute').setAttribute('aria-label', m ? 'おと オフ' : 'おと オン');
-    $('title-mute').textContent = m ? 'おと：オフ' : 'おと：オン';
+    $('mute').setAttribute('aria-label', 'せってい');
+    ['title', 'set'].forEach(function (p) {
+      $(p + '-mute').textContent = m ? 'おと：オフ' : 'おと：オン';
+      $(p + '-mute').classList.toggle('off', m);
+      // 「おと」がオフのあいだは BGM も鳴らない（おんがく：オンでも）
+      $(p + '-bgm').textContent = b ? (m ? 'おんがく：オン（おとオフ）' : 'おんがく：オン') : 'おんがく：オフ';
+      $(p + '-bgm').classList.toggle('off', !b || m);
+      if (document.activeElement !== $(p + '-vol')) $(p + '-vol').value = pct;
+      $(p + '-vol-n').textContent = pct + '%';
+    });
   }
 
   // ---- 画面 ----
@@ -54,6 +63,7 @@
 
   function toTitle() {
     mode = 'title';
+    HDBgm.stop();
     show('title', true); show('over', false);
     $('title-hi').textContent = hi;
   }
@@ -74,6 +84,7 @@
     activePointerId = null;
     inputLockUntil = clock + 0.25;
     show('title', false); show('over', false);
+    HDBgm.start();
     newHeld();
     updateHud();
   }
@@ -87,6 +98,7 @@
     $('over-hi').textContent = hi;
     $('new-record').hidden = !isNew;
     show('over', true);
+    HDBgm.stop();
     updateHud();
   }
 
@@ -106,7 +118,7 @@
     if (held) held.x = clampX(aimX, held.stage);
   }
   function release() {
-    if (mode !== 'play' || !held || clock < inputLockUntil) return;
+    if (mode !== 'play' || settingsOpen || !held || clock < inputLockUntil) return;
     physics.addPiece(held.stage, held.x, C.DROP_Y);
     HDAudio.playDrop();
     held = null;
@@ -146,12 +158,30 @@
   document.addEventListener('pointerup', function () { HDAudio.unlock(); }, true);
   document.addEventListener('click', function () { HDAudio.unlock(); }, true);
   document.addEventListener('touchend', function () { HDAudio.unlock(); }, true);
-  document.addEventListener('touchmove', function (e) { e.preventDefault(); }, { passive: false });
+  // スライダーのドラッグは通す（止めると iOS で動かない）
+  document.addEventListener('touchmove', function (e) {
+    if (e.target && e.target.classList && e.target.classList.contains('vol')) return;
+    e.preventDefault();
+  }, { passive: false });
   document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
 
-  function toggleMute() { HDAudio.setMuted(!HDAudio.isMuted()); updateMuteUi(); }
-  $('mute').addEventListener('click', toggleMute);
-  $('title-mute').addEventListener('click', toggleMute);
+  function toggleMute() { HDAudio.setMuted(!HDAudio.isMuted()); HDBgm.refresh(); updateMuteUi(); }
+  function toggleBgm() { HDAudio.unlock(); HDBgm.setEnabled(!HDBgm.isEnabled()); updateMuteUi(); }
+  function onVol(ev) { HDBgm.setVolume(ev.target.value / 100); updateMuteUi(); }
+  function openSettings(on) {
+    settingsOpen = on;
+    activePointerId = null;
+    if (!on) inputLockUntil = clock + 0.25;   // 閉じた直後のタップで落とさない
+    show('settings', on);
+    if (on) updateMuteUi();
+  }
+  $('mute').addEventListener('click', function () { openSettings(true); });
+  $('set-close').addEventListener('click', function () { openSettings(false); });
+  ['title', 'set'].forEach(function (p) {
+    $(p + '-mute').addEventListener('click', toggleMute);
+    $(p + '-bgm').addEventListener('click', toggleBgm);
+    $(p + '-vol').addEventListener('input', onVol);
+  });
   $('start').addEventListener('click', startGame);
   $('retry').addEventListener('click', startGame);
   $('to-title').addEventListener('click', toTitle);
@@ -181,6 +211,23 @@
         dbg.appendChild(b);
       })(n);
     }
+    // BGM の試聴・オンオフ・音量
+    var info = document.createElement('span');
+    info.style.cssText = 'font-size:12px;background:#fff8e6;padding:4px 6px;';
+    function bgmInfo() { info.textContent = 'BGM ' + (HDBgm.isPlaying() ? '再生中' : '停止') + ' ' + Math.round(HDBgm.getVolume() * 100) + '% 予約' + HDBgm.scheduled(); }
+    [['BGMきく', function () { HDAudio.unlock(); HDBgm.start(); }],
+     ['BGMとめる', function () { HDBgm.stop(); }],
+     ['BGMオンオフ', toggleBgm],
+     ['BGM-', function () { HDBgm.setVolume(HDBgm.getVolume() - 0.1); }],
+     ['BGM+', function () { HDBgm.setVolume(HDBgm.getVolume() + 0.1); }]].forEach(function (d) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.textContent = d[0];
+      b.addEventListener('click', function () { d[1](); updateMuteUi(); bgmInfo(); });
+      dbg.appendChild(b);
+    });
+    dbg.appendChild(info);
+    setInterval(bgmInfo, 500);
+    bgmInfo();
   }
 
   // ---- レイアウト ----
@@ -202,7 +249,7 @@
     if (dt > C.MAX_FRAME) dt = C.MAX_FRAME;
     clock += dt;
 
-    if (mode === 'play') {
+    if (mode === 'play' && !settingsOpen) {
       physics.step(dt);
       if (!held) {
         cooldown -= dt;
