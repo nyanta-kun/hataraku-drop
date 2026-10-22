@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>はたらくドロップ</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <header id="hud">
+    <div class="box"><span class="label">スコア</span><span id="score" class="num">0</span></div>
+    <div class="box"><span class="label">ハイスコア</span><span id="hi" class="num">0</span></div>
+    <div class="box next"><span class="label">つぎ</span><canvas id="next" width="48" height="48"></canvas></div>
+    <button id="mute" class="icon-btn" type="button" aria-label="おと">♪</button>
+  </header>
+  <main id="stage"><canvas id="game"></canvas></main>
+  <div id="debug" hidden></div>
+
+  <section id="title" class="overlay">
+    <h1>はたらく<br>ドロップ</h1>
+    <p class="sub">おなじ のりものを くっつけて<br>おおきく しよう！</p>
+    <p class="best">ハイスコア <span id="title-hi">0</span></p>
+    <button id="start" class="big-btn" type="button">はじめる</button>
+    <button id="title-mute" class="small-btn" type="button">おと：オン</button>
+  </section>
+
+  <section id="over" class="overlay" hidden>
+    <h2>おしまい！</h2>
+    <p class="result">スコア <span id="over-score">0</span></p>
+    <p class="best">ハイスコア <span id="over-hi">0</span></p>
+    <p id="new-record" class="record" hidden>しんきろく！</p>
+    <button id="retry" class="big-btn" type="button">もういちど</button>
+    <button id="to-title" class="small-btn" type="button">タイトルへ</button>
+  </section>
+</div>
+<script src="vendor/matter.min.js"></script>
+<script src="src/config.js"></script>
+<script src="src/game-logic.js"></script>
+<script src="src/shapes.js"></script>
+<script src="src/physics.js"></script>
+<script src="src/render.js"></script>
+<script src="src/audio.js"></script>
+<script src="src/main.js"></script>
+</body>
+</html>
